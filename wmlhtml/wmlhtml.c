@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tree.h>
-#include <parser.h>
+#include <libxml/tree.h>
+#include <libxml/parser.h>
 
 FILE *out;
 
@@ -31,9 +31,9 @@ void dumpNode(xmlNodePtr node)
 {
         while(node) {
                 fprintf(stderr, "%*s == %s\n", dumpNodeIndent, "", node->name);
-                if(node->childs) {
+                if(node->children) {
                         dumpNodeIndent += 2;
-                        dumpNode(node->childs);
+                        dumpNode(node->children);
                         dumpNodeIndent -= 2;
                 }
                 node = node->next;
@@ -63,7 +63,7 @@ void showHtml(xmlNodePtr node)
 			fprintf(out, "%*s<%s", htmlIndent, "", node->name);
 			attr = node->properties;
 			while(attr) {
-				val = attr->val;
+				val = attr->children;
 				if(strcmp(val->name, "text") != 0)
 					continue;
 				else
@@ -73,9 +73,9 @@ void showHtml(xmlNodePtr node)
 			fprintf(out, ">\n");
 		}
 
-		if(node->childs) {
+		if(node->children) {
 			htmlIndent += 2;
-			showHtml(node->childs);
+			showHtml(node->children);
 			htmlIndent -= 2;
 		}
 
@@ -111,9 +111,9 @@ int main(int argc, char **argv)
 	}
 
 	if(debug)
-		dumpNode(doc->root);
+		dumpNode(doc->children);
 
-	showHtml(doc->root);
+	showHtml(doc->children);
 
 	return 0;
 }

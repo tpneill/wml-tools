@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tree.h>
-#include <parser.h>
+#include <libxml/tree.h>
+#include <libxml/parser.h>
 
 #define TA_NONE      0
 #define TA_BOLD      1
@@ -39,9 +39,9 @@ void dumpNode(xmlNodePtr node)
 {
 	while(node) {
 		fprintf(stderr, "%*s == %s\n", dumpNodeIndent, "", node->name);
-		if(node->childs) {
+		if(node->children) {
 			dumpNodeIndent += 2;
-			dumpNode(node->childs);
+			dumpNode(node->children);
 			dumpNodeIndent -= 2;
 		}
 		node = node->next;
@@ -104,8 +104,8 @@ void showNode(xmlNodePtr node, int textAttr)
 		} else
 			printf("\n#! : %s\n", node->name);
 
-		if(node->childs)
-			showNode(node->childs, nTextAttr);
+		if(node->children)
+			showNode(node->children, nTextAttr);
 
 		nTextAttr = oTextAttr;
 		node = node->next;
@@ -121,7 +121,7 @@ void showCard(xmlNodePtr cardNode)
 		printf("Card: %s (id: %s)\n", xmlGetProp(cardNode, "title"),
 		       xmlGetProp(cardNode, "id"));
 		printf("------------------------------------------\n\n");
-		showNode(cardNode->childs, TA_NONE);
+		showNode(cardNode->children, TA_NONE);
 		printf("\n------------------------------------------\n");
 	}
 }
@@ -139,8 +139,8 @@ xmlNodePtr findCard(xmlNodePtr node, char *id)
 				return node;
 		}
 
-		if(node->childs) {
-			if((card = findCard(node->childs, id)))
+		if(node->children) {
+			if((card = findCard(node->children, id)))
 				return card;
 		}
 
@@ -173,9 +173,9 @@ int main(int argc, char **argv)
 	}
 
 	if(debug)
-		dumpNode(doc->root);
+		dumpNode(doc->children);
 
-	showCard(findCard(doc->root, card));
+	showCard(findCard(doc->children, card));
 
 	return 0;
 }

@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tree.h>
-#include <parser.h>
+#include <libxml/tree.h>
+#include <libxml/parser.h>
 
 #ifdef CGI_BIN
 void wmlError(char *error)
@@ -65,7 +65,7 @@ void parseChannel(xmlNodePtr channel)
 
 	for(node = channel; node != NULL; node = node->next) {
 		if(strcasecmp("title", node->name) == 0) {
-			on = node->childs;
+			on = node->children;
 			if(strcasecmp("text", on->name) == 0)
 				printf("    <p><b>%s</b></p>\n", on->content);
 		}
@@ -78,7 +78,7 @@ void parseHeadline(xmlNodePtr item)
 
 	for(node = item; node != NULL; node = node->next) {
 		if(strcasecmp("title", node->name) == 0) {
-			on = node->childs;
+			on = node->children;
 			if(strcasecmp("text", on->name) == 0)
 				printf("    <p align=\"center\">----</p>\n");
 				printf("    <p>");

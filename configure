@@ -6,7 +6,7 @@ LD_OPS=""
 CC_OPS="-I../"
 CC=""
 OPTIMISE_IF_GCC="y"
-XML_CONFIG="xml-config"
+XML_CONFIG="xml2-config"
 SHARED_LINK=""
 
 echo "wml-tools v$VERSION configuration script"
