@@ -92,6 +92,8 @@ void parseHeadline(xmlNodePtr item)
 void parseRdf(xmlNodePtr rdf)
 {
 	xmlNodePtr node;
+	xmlNodePtr basenode;
+	xmlNodePtr subnode;
 
 	puts("<?xml version=\"1.0\"?>");
 	puts("<!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\" \"http://www.wapforum.org/DTD/wml_1.1.xml\">");
@@ -103,11 +105,26 @@ void parseRdf(xmlNodePtr rdf)
 	puts("  </template>");
 	puts("  <card id=\"init\" title=\"Headlines\">");
 
-	for(node = rdf->childs; node != NULL; node = node->next) {
-		if(strcasecmp("channel", node->name) == 0)
-			parseChannel(node->childs);
-		else if(strcasecmp("item", node->name) == 0)
-			parseHeadline(node->childs);
+	basenode = rdf;
+	/* Skip everything which is not an element node */
+	while (basenode->type != XML_ELEMENT_NODE) {
+	  basenode = basenode->next;
+	}
+
+	for (node = basenode->children; node != NULL; node = node->next) {
+	  if(strcasecmp("channel", node->name) == 0) {
+	    parseChannel(node->children);
+	    for (subnode = node->children; subnode != NULL; subnode = subnode->next) {
+	      /* RSS has a different tree structure */
+	      if (strcasecmp("item", subnode->name) == 0) {
+		parseHeadline(subnode->children);
+	      }
+	    }
+	  } else {
+	    if (strcasecmp("item", node->name) == 0) {
+	      parseHeadline(node->children);
+	    }
+	  }
 	}
 
 	puts("  </card>");
@@ -151,7 +168,7 @@ int main(int argc, char **argv)
 #endif /* CGI_BIN */
 	}
 
-	parseRdf(rdf->root);
+	parseRdf(rdf->children);
 
 	exit(0);
 }
