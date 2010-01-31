@@ -8,6 +8,9 @@ CC=""
 OPTIMISE_IF_GCC="y"
 XML_CONFIG="xml2-config"
 SHARED_LINK=""
+if [ "$TMPDIR" = "" ] ; then
+  TMPDIR=/tmp
+fi
 
 echo "wml-tools v$VERSION configuration script"
 
@@ -53,16 +56,16 @@ for CC_TEST in "$CC" gcc cc; do
   if [ "$CC_WORKS" = "n" -a "$CC_TEST" != "" ]; then
     CC="$CC_TEST"
     echo -n "Testing compiler $CC ... "
-    cat >/tmp/.pwt.c << EOF
+    cat >$TMPDIR/.pwt.c << EOF
 #include <stdio.h>
 void main(void) { puts("CC Test"); }
 EOF
 
-    $CC -o /tmp/.pwt /tmp/.pwt.c >/dev/null 2>&1
-    if [ -e "/tmp/.pwt" ]; then
+    $CC -o $TMPDIR/.pwt $TMPDIR/.pwt.c >/dev/null 2>&1
+    if [ -e "$TMPDIR/.pwt" ]; then
       echo "Found"
       echo -n "Checking if compiler $CC works ... "
-      if [ "`/tmp/.pwt`" = "CC Test" ]; then
+      if [ "`$TMPDIR/.pwt`" = "CC Test" ]; then
         echo "Yes"
         CC_WORKS="y"
       else
@@ -75,7 +78,7 @@ EOF
     fi
   fi
 done
-rm -f /tmp/.pwt /tmp/.pwt.c
+rm -f $TMPDIR/.pwt $TMPDIR/.pwt.c
 
 if [ "$CC_WORKS" = "n" ]; then
   echo "Couldn't find a working compiler"
