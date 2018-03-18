@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tree.h>
-#include <parser.h>
+#include <libxml/tree.h>
+#include <libxml/parser.h>
 #define WML_NO_CLOSURES
 #include <wml/tokens.h>
 #include <wml/tags.h>
@@ -105,7 +105,7 @@ void compileAttributes(xmlAttrPtr attributes)
 	char buffer[256];
 
 	while(attributes) {
-		val = attributes->val;
+		val = attributes->children;
 		if(strcmp(val->name, "text") != 0) {
 			fprintf(stderr, "Parse error: can't handle non plaintext attribute values\n");
 			crashBurn();
@@ -178,7 +178,7 @@ void compileTags(xmlNodePtr node)
 			if(node->properties)
 				tagVal |= WMLTC_ATTRIBUTES;
 			
-			if(node->childs)
+			if(node->children)
 				tagVal |= WMLTC_CONTENT;
 			
 			fputc(tagVal, out);
@@ -186,8 +186,8 @@ void compileTags(xmlNodePtr node)
 			if(node->properties)
 				compileAttributes(node->properties);
 			
-			if(node->childs)
-				compileTags(node->childs);
+			if(node->children)
+				compileTags(node->children);
 			
 			if(tagHasClosure(tagNum))
 				fputc(WMLTC_END, out);
@@ -246,7 +246,7 @@ int main(int argc, char **argv)
 	fputc(0x6A, out);
 	fputc(0x00, out);
 
-	compileTags(doc->root);
+	compileTags(doc->children);
 
 	fclose(out);
 
