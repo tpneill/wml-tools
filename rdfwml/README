@@ -1,0 +1,11 @@
+This is a simple converter for Netscape RDF channel files to small WML
+decks which contain a small card with each item. The CGI variant just adds
+the correct Content-Type header and works out the file to parse from the
+QUERY_STRING variable.
+
+To use rdfwml just call it with an RDF file (one from Slashdot is
+provided).
+
+To use rdfwml.cgi, link it like:
+  <a href="/path/to/cgi/rdfwml.cgi?slashdot.rdf">News!</a>
+

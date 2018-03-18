@@ -1,0 +1,45 @@
+18/3/2018 - v0.0.5
+
+  * Relicensed under GPL by request
+  * Removed old sample cruft
+  * Very unlikely to actually compile on any modern system
+
+31/1/2000 - v0.0.4
+
+  * wmlc and wmlhtml now use the correct variable type for XML attribute
+    pointers (xmlAttrPtr, not struct xmlAttr*). Now they will compile with
+    newer versions of libxml.
+  * Added wmlhtml to Makefile.in. Thanks to Peter Hanecak for pointing out
+    this glaring omission (oops :).
+
+14/12/1999 - v0.0.3
+
+  * wmld now uses the string table properly (oops) and can deal with
+    references to the table from both strings and variable names. I'd say
+    that this is no longer alpha code and could probably be used with
+    reasonable success.
+  * Remebered to change the version number in the configure script.
+
+13/12/1999 - v0.0.2
+
+  * wmld now parses the string table and can use it accordingly. The code
+    for this was missing from my copy of the bytecode specifications.
+    Please note that all documentation relating to WML is gratefully
+    accepted!
+  * Added wmlhtml - a simple WML to HTML converter. This is just a quick
+    hack and doesn't do a great job but gives a better idea than wmlv of
+    how a WML deck will look.
+
+ 10/12/1999 - v0.0.1
+
+  * First public release
+  * Added files LICENSE and COPYRIGHT
+  * wmlc now generates bytecode which now works in Nokia's WAP toolkit and
+    Ericsson's WAP SDK. Most of the time, anyway
+  * Fixed rdfwml to deal with <, > or $ in the input and fix accordingly
+
+9/12/1999 - v0.0.0
+
+  * First noted build
+  * wmld, wmlv, wbmp2xpm and rdfwml all compile
+  * wmlc does nasty things

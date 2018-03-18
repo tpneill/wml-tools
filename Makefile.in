@@ -1,0 +1,18 @@
+CC = %CC%
+CC_OPS = %CC_OPS% 
+LD_OPS = %LD_OPS%
+XML_CC_OPS = %XML_CC_OPS%
+XML_LD_OPS = %XML_LD_OPS%
+TOOLS = rdfwml wbmp wmlc wmld wmlv wmlhtml
+
+all:
+	@for i in $(TOOLS); do \
+	  ( cd $$i && $(MAKE) CC='$(CC)' CC_OPS='$(CC_OPS)' LD_OPS='$(LD_OPS)' XML_CC_OPS='$(XML_CC_OPS)' XML_LD_OPS='$(XML_LD_OPS)' all ) || exit 1; \
+	done
+
+clean:
+	@for i in $(TOOLS); do \
+	  ( cd $$i && $(MAKE) CC='$(CC)' CC_OPS='$(CC_OPS)' LD_OPS='$(LD_OPS)' XML_CC_OPS='$(XML_CC_OPS)' XML_LD_OPS='$(XML_LD_OPS)' clean ) || exit 1; \
+	done
+
+re: clean all

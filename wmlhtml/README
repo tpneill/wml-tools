@@ -1,0 +1,4 @@
+This is a very simple WML to HTML converter. All it does is swap some tags
+around so that browsers can render it. It leaves in a lot of WML-specific
+tags but the HTML spec kindly tells browsers to ignore anything they don't
+understand, so the pages can still be viewed.

@@ -1,0 +1,173 @@
+#!/bin/sh
+
+VERSION="0.0.5"
+
+LD_OPS=""
+CC_OPS="-I../"
+CC=""
+OPTIMISE_IF_GCC="y"
+XML_CONFIG="xml-config"
+SHARED_LINK=""
+
+echo "wml-tools v$VERSION configuration script"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --cc)
+      shift
+      CC="$1"
+      echo "Setting compiler to '$CC'"
+      ;;
+    --cc-flags)
+      shift
+      CC_OPS="$CC_OPS $1"
+      echo "Adding compiler flags '$1'"
+      ;;
+    --xml-config)
+      shift
+      XML_CONFIG="$1"
+      echo "Setting xml-config command to '$XML_CONFIG'"
+      ;;
+    *)
+      echo "Unknown option '$1'"
+      echo ""
+      echo "Known options:"
+      echo ""
+      echo "  --cc <cc>         : Set compiler to <cc>"
+      echo "  --cc-flags <fl>   : Set standard compiler flags to <fl>"
+      echo "  --xml-config <cf> : Set xml-config program to <cf>"
+      echo ""
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+
+
+#### Test if compiler works
+
+CC_WORKS="n"
+
+for CC_TEST in "$CC" gcc cc; do
+  if [ "$CC_WORKS" = "n" -a "$CC_TEST" != "" ]; then
+    CC="$CC_TEST"
+    echo -n "Testing compiler $CC ... "
+    cat >/tmp/.pwt.c << EOF
+#include <stdio.h>
+void main(void) { puts("CC Test"); }
+EOF
+
+    $CC -o /tmp/.pwt /tmp/.pwt.c >/dev/null 2>&1
+    if [ -e "/tmp/.pwt" ]; then
+      echo "Found"
+      echo -n "Checking if compiler $CC works ... "
+      if [ "`/tmp/.pwt`" = "CC Test" ]; then
+        echo "Yes"
+        CC_WORKS="y"
+      else
+        echo "No"
+        CC_WORKS="n"
+      fi
+    else
+      echo "Not found"
+      CC_WORKS="n"
+    fi
+  fi
+done
+rm -f /tmp/.pwt /tmp/.pwt.c
+
+if [ "$CC_WORKS" = "n" ]; then
+  echo "Couldn't find a working compiler"
+  exit 1
+fi
+
+if [ "$CC" = "gcc" ]; then
+  if [ "$OPTIMISE_IF_GCC" = "y" ]; then
+    echo "Adding optimising flags for compiler"
+    CC_OPS="$CC_OPS -O2"
+  fi
+fi
+
+####
+
+
+
+
+##### We don't need socket code yet so miss out
+#
+##### Solaris check (-lsocket)
+#
+#echo -n "Testing for bind() in -lsocket ... "
+#cat >/tmp/.pwt.c << EOF
+##include <stdio.h>
+##include <sys/types.h>
+##include <sys/socket.h>
+#void main(void) {
+#struct sockaddr* mad;
+#int i;
+#  bind(i, (struct sockaddr*) &mad, 1);
+#}
+#EOF
+#
+#$CC -o /tmp/.pwt /tmp/.pwt.c >/dev/null 2>&1
+#if [ -e "/tmp/.pwt" ]; then
+#  echo "Not required"
+#else
+#  $CC -o /tmp/.pwt /tmp/.pwt.c -lsocket >/dev/null 2>&1
+#  if [ -e "/tmp/.pwt" ]; then
+#    echo "Found"
+#    LD_OPS="$LD_OPS -lsocket -lnsl"
+#  else
+#    echo "Needed but not found"
+#    rm -f /tmp/.pwt /tmp/.pwt.c
+#    exit 1
+#  fi
+#fi
+#rm -f /tmp/.pwt /tmp/.pwt.c
+#
+#####
+
+
+#### XML config
+
+echo -n "Getting XML compilation flags ... "
+XML_CC_OPS="`$XML_CONFIG --cflags`"
+XML_LD_OPS="`$XML_CONFIG --libs`"
+if [ "$XML_CC_OPS" = "" -o "$XML_LD_OPS" = "" ]; then
+  echo "Not found"
+  echo "WARNING: Couldn't execute '$XML_CONFIG' for XML compilation flags."
+  echo "WARNING: Check libxml is installed and try again."
+  exit 1
+else
+  echo "Done"
+fi
+
+####
+
+echo "Compilation flags :"
+echo ""
+echo "       CC : $CC"
+echo "   CC_OPS : $CC_OPS"
+echo "   LD_OPS : $LD_OPS"
+echo "XML flags : Include '$XML_CC_OPS'"
+echo "          : Link '$XML_LD_OPS'"
+echo ""
+echo "Building Makefile"
+
+if [ -f "Makefile" ]; then
+  mv -f Makefile Makefile.bak
+fi
+
+CC_USE=`echo $CC | sed 's/\\//\\\\\//g'`
+CC_OPS_USE=`echo $CC_OPS | sed 's/\\//\\\\\//g'`
+LD_OPS_USE=`echo $LD_OPS | sed 's/\\//\\\\\//g'`
+XML_CC_OPS_USE=`echo $XML_CC_OPS | sed 's/\\//\\\\\//g'`
+XML_LD_OPS_USE=`echo $XML_LD_OPS | sed 's/\\//\\\\\//g'`
+
+sed "s/%CC%/$CC_USE/g
+s/%CC_OPS%/$CC_OPS_USE/g
+s/%LD_OPS%/$LD_OPS_USE/g
+s/%XML_CC_OPS%/$XML_CC_OPS_USE/g
+s/%XML_LD_OPS%/$XML_LD_OPS_USE/g" <Makefile.in >Makefile
+echo "Done"

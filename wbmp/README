@@ -1,0 +1,14 @@
+These are tools for dealing with WBMP files - WAP bitmaps.
+
+These files are really simple - the first two bytes contain version
+information (I think) which at the minute is set to 0. The 3rd byte
+contains the width and the 4th byte the height (I guess this makes WBMP
+images max 255x255 pixels then).
+
+From the 5th byte onwards they are simply byte-padded binary encoded 1-bit
+images - 1 for white, 0 for black.
+
+wbmp2xpm generates 1-bit XPM files from WBMP files. An example WBMP file
+is included (logo.wbmp).
+
+Coming soon : something useful (i.e. a WBMP creator)
